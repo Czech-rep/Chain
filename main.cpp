@@ -6,15 +6,15 @@
 
 int main()
 {
-    TestChain test;
+    TestChain<int> test;
     test.execute_all();
+/*
+    UniBox<int>* a = new UniBox<int>(1);
+    UniBox<int>* b = new UniBox<int>(15);
+    UniBox<int>* c = new UniBox<int>(88);
+    UniBox<int>* d = new UniBox<int>(123);
 
-    /*UniBox* a = new UniBox(1);
-    UniBox* b = new UniBox(15);
-    UniBox* c = new UniBox(88);
-    UniBox* d = new UniBox(123);
-
-    ClosedChain loop;
+    ClosedChain<int> loop;
     loop.append(a);
     //std::cout<<loop<<std::endl;
     loop.append(b);
@@ -22,15 +22,16 @@ int main()
     loop.append(c);
     //std::cout<<loop<<std::endl;
     loop.append(d);
-    std::cout<<loop<<std::endl;
+    //std::cout<<loop<<std::endl;
 
-    std::cout<<" p:"<<*loop.pick_predecessor(0)<<std::endl;
+    std::cout<<" p:"<<*loop.pick_predecessor(1)<<std::endl;
 
 
 
 
     std::cout<<loop<<std::endl;
     std::cout<<" to bvyla lissta " <<std::endl;*/
+
     return 0;
 }
 
@@ -38,7 +39,7 @@ int main()
 
 
 
-
+/*
 void manual(){
 
     ClosedChain loop;
@@ -52,7 +53,7 @@ void manual(){
     loop.append(e);
     /*assert( loop.get_length() == 5 );
     assert( loop.get_nth(0)->get_value() == 5 );
-    assert( loop.get_nth(3)->get_value() == 997 );*/
+    assert( loop.get_nth(3)->get_value() == 997 );
 
     std::cout << "loop: " << loop << std::endl;
     //assert( loop.get_length() == 4 );
@@ -70,7 +71,7 @@ void manual(){
     loop2.inject(0, e);
     //assert( loop == loop2 );
     //std::cout << ( loop == loop2 );
-/*
+
 std::cout <<"aa";
     UniBox* ptt = loop.get_nth(0);
     while (true){
@@ -80,11 +81,11 @@ std::cout <<"aa";
             break;
     }std::cout <<"complete"<< std::endl;
 
-    std::cout << loop << std::endl;*/
+    std::cout << loop << std::endl;
     //cout << a.get_anchor()->get_value()<< " Hello world!" << endl;
 }
 
-
+*/
 
 
 
