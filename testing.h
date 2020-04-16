@@ -124,5 +124,17 @@ TestChain<T>::~TestChain(){
 
 
 //test - dopisano na githubie
+//kolejny test - dopisano w notatniku
+/*
+co musze zmienic
+test jakos tak zeby nie byl templatem. i testowal moj wlasny typ
+ i zeby nie zapisywac do chaina statycznych obiektow
+ poczytaj o throw i smart pointer
+ sprawdz co robia metody dla pustej listy
+ i assert jesno na test
+ */
+
+
+
 
 #endif // TESTING_H_INCLUDED
