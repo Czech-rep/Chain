@@ -115,7 +115,7 @@ void TestChain<T>::test_printing(){
     //std::cout << "last elem: " << (sample->pick_predecessor(sample->get_length()))->get_value() << std::endl;
     //std::cout << "last elem: " << sample->get_nth(4)->get_value() << std::endl;
 }
-//duuuuuze pytanie, co sie odpierdala dlaczego teraz dziala mimo ze obiekty e(500) i w(50) powinny zostaæ ununiete?
+//duuuuuze pytanie, co sie dzieje dlaczego teraz dziala mimo ze obiekty e(500) i w(50) powinny zostaæ ununiete?
 
 template<typename T>
 TestChain<T>::~TestChain(){
