@@ -123,6 +123,6 @@ TestChain<T>::~TestChain(){
 }
 
 
-
+//test - dopisano na githubie
 
 #endif // TESTING_H_INCLUDED
