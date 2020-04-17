@@ -1,15 +1,20 @@
 #include <iostream>
-#include <cassert>
 
 #include "chain.h"
 #include "testing.h"
+#include "test_custom.h"
 
 int main()
 {
-    TestChain<int> test;
-    test.execute_all();
-/*
-    UniBox<int>* a = new UniBox<int>(1);
+    TestChain test;
+    test.execute();
+
+    //TestCustom test2;
+    //test2.execute();
+
+
+
+    /*UniBox<int>* a = new UniBox<int>(1);
     UniBox<int>* b = new UniBox<int>(15);
     UniBox<int>* c = new UniBox<int>(88);
     UniBox<int>* d = new UniBox<int>(123);
@@ -24,14 +29,17 @@ int main()
     loop.append(d);
     //std::cout<<loop<<std::endl;
 
-    std::cout<<" p:"<<*loop.pick_predecessor(1)<<std::endl;
+
+    std::cout<<" p:"<<*loop.pick_predecessor(10)<<std::endl;
 
 
 
 
     std::cout<<loop<<std::endl;
-    std::cout<<" to bvyla lissta " <<std::endl;*/
+    std::cout<<" to bvyla lissta " <<std::endl;
+*/
 
+    std::cout << "===program executed " << std::endl;
     return 0;
 }
 

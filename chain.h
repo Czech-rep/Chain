@@ -9,8 +9,8 @@ class UniBox{/*
     Contains also pointer to another element on list.
     Does not store position number on list.
 */
-    T value;
-    UniBox *anchor;     //stores pointer to next element
+    T value;               // stores pointer to content
+    UniBox *anchor;         // stores pointer to next element
 
 public:
     UniBox(T);
@@ -47,12 +47,11 @@ public:
 
 
 };
-/*
-std::ostream& operator<<(std::ostream& os, const ClosedChain& chain);
-std::ostream& operator<<(std::ostream& os, const UniBox& content);
-*/
 
 // =========================== IMPLEMENTATION =========================== \\
+
+
+class exceeded_scope {};
 
 template<typename T>
 UniBox<T>::UniBox(T input):
@@ -68,7 +67,7 @@ void UniBox<T>::set_anchor(UniBox* aim){
 }
 template<typename T>
 UniBox<T>* UniBox<T>::get_anchor() const{
-    return anchor;  //returns adress to next element //no, not we return object
+    return anchor;  //returns adress to next element //no, not we return object // no, now we return pointer to
 }
 
 template<typename T>
@@ -98,9 +97,9 @@ UniBox<T>* ClosedChain<T>::pick_predecessor(unsigned point) const{
     also asked for the place after last element (length) will return the last
 */
     if (point > lenght){
-            std::string err = "demanded index out of list ";
-        throw err;
+        throw exceeded_scope();
     }
+
     UniBox<T>* floating_pointer = alfa;
     unsigned i=0;
     while (i+1 < lenght){
@@ -133,11 +132,11 @@ template<typename T>
 void ClosedChain<T>::wipeout(unsigned n){
     UniBox<T>* pointing = pick_predecessor(n);
     UniBox<T>* passing = pointing->get_anchor();
-    pointing->set_anchor(passing->get_anchor());
-    --lenght;
-    passing -> ~UniBox();
     if (n == 0)
         alfa = get_nth(1);
+    pointing->set_anchor(passing->get_anchor());
+    --lenght;
+    delete passing;
 }
 template<typename T>
 bool ClosedChain<T>::operator==(const ClosedChain<T>& other) const{
@@ -198,8 +197,6 @@ std::ostream& operator<<(std::ostream& os, const UniBox<T>& content){
 }
 
 //instantyzacja
-        template class UniBox<int>;
-        template class ClosedChain<int>;
 
 
 

@@ -1,127 +1,99 @@
 #ifndef TESTING_H_INCLUDED
 #define TESTING_H_INCLUDED
 
+#include <cassert>
 #include "chain.h"
 
-template<typename T>
+
 class TestChain{
-    ClosedChain<T>* sample = nullptr;
+    ClosedChain<int>* sample = new ClosedChain<int>;
 
 public:
     TestChain();
-    void init();
-    void execute_all();
     ~TestChain();
 
-    void test_fill_length_match();
+    void execute();
+    void test_fill_length();
     void test_delete();
     void test_empty();
     void test_compare();
     void test_inject();
     void test_printing();
 
+    void test_out_of_range();
+
 };
 
 // =========================== IMPLEMENTATION =========================== \\
 
 
-template<typename T>
-TestChain<T>::TestChain(){
-    init();
+
+TestChain::TestChain(){
     std::cout << "testing instance initialized" << std::endl;
 }
-template<typename T>
-void TestChain<T>::init(){
-    sample = new ClosedChain<T>;
-}
-template<typename T>
-void TestChain<T>::execute_all(){
+void TestChain::execute(){
     test_empty();
-    test_fill_length_match();
+    test_fill_length();
     test_delete();
     test_compare();
     test_inject();
     test_printing();
+    test_out_of_range();
 
     std::cout << "all tests succeeded" << std::endl;
 }
 
-
-template<typename T>
-void TestChain<T>::test_empty(){
+void TestChain::test_empty(){
     assert( sample->is_blanc() == 1 );
-    *sample += new UniBox<T>(2);
-    assert( sample->is_blanc() == 0 );
     std::cout << "-> test_empty succeeded" << std::endl;
 }
-template<typename T>
-void TestChain<T>::test_fill_length_match(){
-    *sample += new UniBox<T>(9);
-    *sample += new UniBox<T>(27);
-    *sample += new UniBox<T>(77);
-    *sample += new UniBox<T>(123);
-
-    assert( sample->get_length() == 5 );
-    assert( sample->get_nth(0)->get_value() == 2 );
-    assert( sample->get_nth(4)->get_value() == 123 );
-    std::cout << "-> test_fill_length_match succeeded" << std::endl;
+void TestChain::test_fill_length(){
+    *sample += new UniBox<int>(9);
+    *sample += new UniBox<int>(27);
+    *sample += new UniBox<int>(77);
+    *sample += new UniBox<int>(123);
+    assert( sample->get_length() == 4 );
+    std::cout << "-> test_fill_length succeeded" << std::endl;
 }
-template<typename T>
-void TestChain<T>::test_delete(){
-    sample->wipeout(4);
+void TestChain::test_delete(){
     sample->wipeout(0);
-    assert( sample->get_length() == 3 );
-    assert( sample->get_nth(0)->get_value() == 9 );
-    assert( sample->get_nth(2)->get_value() == 77 );
+    assert( sample->get_nth(0)->get_value() == 27 );
     std::cout << "-> test_delete succeeded" << std::endl;
 }
-template<typename T>
-void TestChain<T>::test_compare(){
-    ClosedChain<T> other;
-    UniBox<T> q(9), w(27), e(77);
-    other += &q;
-    other += &w;
-    other += &e;
-    assert( *sample == other );
-    other.wipeout(0);
-    assert( !(*sample == other) );
-    other.~ClosedChain();
+void TestChain::test_compare(){
+    ClosedChain<int>* other = new ClosedChain<int>;
+    *other += new UniBox<int>(27);
+    *other += new UniBox<int>(77);
+    *other += new UniBox<int>(123);
+    assert( *sample == *other );
+    delete other;
     std::cout << "-> test_compare succeeded" << std::endl;
 }
-template<typename T>
-void TestChain<T>::test_inject(){
-    assert( sample->get_nth(1)->get_value() == 27 );
-    UniBox<T> *q = new UniBox<T>(49);
-    //UniBox q(49                                   dziwnie sie dzieje jak stworzymy element w miejscu - po zakonczeniu funkcji nie znika
-    sample->inject(1, q);
-    assert( sample->get_nth(1)->get_value() == 49 );
-    assert( sample->get_nth(2)->get_value() == 27 );
-        assert( sample->get_nth(0)->get_value() == 9 );
-        UniBox<T> *w = new UniBox<T>(50);
-        sample->inject(0, w);
-        assert( sample->get_nth(0)->get_value() == 50 );
-    UniBox<T> *e = new UniBox<T>(500);
-    sample->inject(5, e);
-    assert( sample->get_nth(5)->get_value() == 500 );
-    //std::cout <<*sample;
-    //std::cout << sample->get_length() << std::endl;
-    //std::cout << "last elem fun: " << sample->get_nth(5)->get_value() << std::endl;
+void TestChain::test_inject(){
+    UniBox<int> *q = new UniBox<int>(49);
+    sample->inject(0, q);
+    assert( sample->get_nth(0)->get_value() == 49 );
     std::cout << "-> test_inject succeeded" << std::endl;
 }
-template<typename T>
-void TestChain<T>::test_printing(){
+void TestChain::test_printing(){
     std::cout <<*sample;
     std::cout << "-> test_printing succeeded" << std::endl;
-    //std::cout << "last elem: " << (sample->pick_predecessor(sample->get_length()))->get_value() << std::endl;
-    //std::cout << "last elem: " << sample->get_nth(4)->get_value() << std::endl;
-}
-//duuuuuze pytanie, co sie dzieje dlaczego teraz dziala mimo ze obiekty e(500) i w(50) powinny zostaæ ununiete?
-
-template<typename T>
-TestChain<T>::~TestChain(){
-    sample->~ClosedChain();
 }
 
+TestChain::~TestChain(){
+    delete sample;
+}
+
+void TestChain::test_out_of_range(){
+    try{
+        sample->pick_predecessor(99);
+    }
+    catch (exceeded_scope){
+        std::cout << "-> test_out_of_range succeeded" << std::endl;
+        return;
+    }
+    std::cout << "-> test_out_of_range failed" << std::endl;
+}
 
 //test - dopisano na githubie
 //kolejny test - dopisano w notatniku
@@ -131,8 +103,8 @@ test jakos tak zeby nie byl templatem. i testowal moj wlasny typ
  i zeby nie zapisywac do chaina statycznych obiektow
  poczytaj o throw i smart pointer
  sprawdz co robia metody dla pustej listy
- i assert jesno na test
- */
+ i assert jesno na test*/
+
 
 
 
