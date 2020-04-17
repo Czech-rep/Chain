@@ -29,7 +29,7 @@ public:
 
 
 TestChain::TestChain(){
-    std::cout << "integer testing instance initialized" << std::endl;
+    std::cout << "testing instance initialized" << std::endl;
 }
 void TestChain::execute(){
     test_empty();
@@ -40,7 +40,7 @@ void TestChain::execute(){
     test_printing();
     test_out_of_range();
 
-    std::cout << "all tests succeeded" << std::endl;
+    std::cout << "all tests succeeded" << std::endl << std::endl;
 }
 
 void TestChain::test_empty(){
@@ -49,34 +49,31 @@ void TestChain::test_empty(){
 }
 void TestChain::test_fill_length(){
     int a=9,b=27,c=77,d=123;
-    *sample += new UniBox<int>(a);
-    *sample += new UniBox<int>(b);
-    *sample += new UniBox<int>(c);
-    *sample += new UniBox<int>(d);
+    *sample += a;
+    *sample += b;
+    *sample += c;
+    *sample += d;
     assert( sample->get_length() == 4 );
-    std::cout <<*sample;
     std::cout << "-> test_fill_length succeeded" << std::endl;
 }
 void TestChain::test_delete(){
     sample->wipeout(0);
-    std::cout <<*sample;
     assert( sample->get_nth(0)->get_value() == 27 );
     std::cout << "-> test_delete succeeded" << std::endl;
 }
 void TestChain::test_compare(){
     ClosedChain<int>* other = new ClosedChain<int>;
     int q=27, w=77, e=123;
-    *other += new UniBox<int>(q);
-    *other += new UniBox<int>(w);
-    *other += new UniBox<int>(e);
+    *other += q;
+    *other += w;
+    *other += e;
     assert( *sample == *other );
     delete other;
     std::cout << "-> test_compare succeeded" << std::endl;
 }
 void TestChain::test_inject(){
     int t=49;
-    UniBox<int> *q = new UniBox<int>(t);
-    sample->inject(0, q);
+    sample->inject(0, t);
     assert( sample->get_nth(0)->get_value() == 49 );
     std::cout << "-> test_inject succeeded" << std::endl;
 }
@@ -100,8 +97,6 @@ void TestChain::test_out_of_range(){
     std::cout << "-> test_out_of_range failed" << std::endl;
 }
 
-//test - dopisano na githubie
-//kolejny test - dopisano w notatniku
 /*
 co musze zmienic
 test jakos tak zeby nie byl templatem. i testowal moj wlasny typ

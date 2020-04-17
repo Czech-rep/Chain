@@ -11,13 +11,22 @@ class Person{
 public:
     Person(std::string _first_name, std::string _last_name, int _number):
         first_name(_first_name), last_name(_last_name), number(_number) {}
+    std::string get_name() const {     return first_name;  }
     bool operator==(const Person &other) const{
         if( first_name==other.first_name && last_name==other.last_name && number==other.number)
             return true;
         return false;
     }
-
+    bool operator!=(const Person &other) const{
+        if( first_name!=other.first_name || last_name!=other.last_name || number!=other.number)
+            return true;
+        return false;
+    }
 };
+std::ostream& operator<<(std::ostream& os, const Person& content){
+     os << content.get_name();
+     return os;
+}
 
 
 class TestCustom{
@@ -46,16 +55,19 @@ public:
 TestCustom::TestCustom(){
     std::cout << "custom class testing instance initialized" << std::endl;
 }
+TestCustom::~TestCustom(){
+    delete sample;
+}
 void TestCustom::execute(){
     test_empty();
     test_fill_length();
-    /*test_delete();
+    test_delete();
     test_compare();
     test_inject();
     test_printing();
     test_out_of_range();
 
-    std::cout << "all tests succeeded" << std::endl;*/
+    std::cout << "all tests succeeded" << std::endl << std::endl;
 }
 
 void TestCustom::test_empty(){
@@ -64,45 +76,38 @@ void TestCustom::test_empty(){
 }
 void TestCustom::test_fill_length(){
     Person* a = new Person("Adam", "Czech", 67676237);
-    UniBox<Person>* b ;//= new UniBox<Person>(*a);
-    UniBox<Person> c(*a);
-    b = &c;
-    *sample += (b);
-    /* *sample += new UniBox<Person>(27);
-    *sample += new UniBox<Person>(77);
-    *sample += new UniBox<Person>(123);
-    assert( sample->get_length() == 4 );
-    std::cout <<*sample;
-    std::cout << "-> test_fill_length succeeded" << std::endl;*/
-}/*
+    Person b("franek","k",5);
+    Person c("wojtek", "cc",6);
+    *sample += *a;
+    *sample += b;
+    *sample += c;
+    assert( sample->get_length() == 3 );
+    std::cout << "-> test_fill_length succeeded" << std::endl;
+}
 void TestCustom::test_delete(){
     sample->wipeout(0);
-    assert( sample->get_nth(0)->get_value() == 27 );
+    assert( sample->get_nth(0)->get_value().get_name() == "franek" );
     std::cout << "-> test_delete succeeded" << std::endl;
 }
 void TestCustom::test_compare(){
-    ClosedChain<int>* other = new ClosedChain<int>;
-    *other += new UniBox<int>(27);
-    *other += new UniBox<int>(77);
-    *other += new UniBox<int>(123);
-    assert( *sample == *other );
-    delete other;
+    ClosedChain<Person> other;
+    Person q("franek","k",5);
+    Person w("wojtek", "cc",6);
+    other += q;
+    other += w;
+    assert( *sample == other );
     std::cout << "-> test_compare succeeded" << std::endl;
 }
 void TestCustom::test_inject(){
-    std::cout <<*sample;
-    UniBox<int> *q = new UniBox<int>(49);
-    sample->inject(0, q);
-    std::cout <<*sample;
-    assert( sample->get_nth(0)->get_value() == 49 );
+    Person pp("karol","ww",21);
+    sample->inject(0, pp);
+    assert( sample->get_nth(0)->get_value() == Person("karol","ww",21) );
     std::cout << "-> test_inject succeeded" << std::endl;
 }
 void TestCustom::test_printing(){
     std::cout <<*sample;
     std::cout << "-> test_printing succeeded" << std::endl;
 }
-
-
 void TestCustom::test_out_of_range(){
     try{
         sample->pick_predecessor(99);
@@ -113,8 +118,6 @@ void TestCustom::test_out_of_range(){
     }
     std::cout << "-> test_out_of_range failed" << std::endl;
 }
-*/
-TestCustom::~TestCustom(){
-    delete sample;
-}
+
+
 #endif // TEST_CUSTOM_H_INCLUDED

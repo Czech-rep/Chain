@@ -3,32 +3,34 @@
 
 #include <iostream>
 
-template<typename T>
-class UniBox{/*
-    Class for storing content. Each element contains pointer to the element - value.
-    Contains also pointer to another element on list.
-    Does not store position number on list.
-*/
-    T value;               // stores pointer to content
-    UniBox *anchor;         // stores pointer to next element
-
-public:
-    UniBox(T& );
-    ~UniBox(){};//{ std::cout << "destruktor" << std::endl; };
-    void set_anchor(UniBox*);
-
-    T get_value() const;
-    UniBox* get_anchor() const;
-};
-
 
 template<typename T>
 class ClosedChain{/*
     Chain Class managers our list. It contains of pointer to the first element.
     Number of elements is also stored.
 */
+//private:
+public:
+    class UniBox{/*
+        Class for storing content. Each element contains pointer to the element - value.
+        Contains also pointer to another element on list.
+        Does not store position number on list.
+    */
+        T value;                // stores content - will be provided by reference
+        UniBox *anchor;         // stores pointer to next element - next UniBox
+    public:
+        UniBox(T& );
+        //~UniBox(){      delete value;    };//{ std::cout << "destruktor" << std::endl; };       // a co jesli value jest statyczne ?????
+        void set_anchor(UniBox*);
+
+        T get_value() const;
+        UniBox* get_anchor() const;
+    };
+private:
     unsigned lenght = 0;
-    UniBox<T> *alfa=nullptr;//, *omega=nullptr;
+    ClosedChain<T>::UniBox *alfa=nullptr;//, *omega=nullptr;
+
+
 
 public:
     ClosedChain(){};
@@ -36,14 +38,14 @@ public:
     unsigned get_length() const { return lenght; };
     bool is_blanc();
 
-    void append(UniBox<T>* );
-    UniBox<T>* pick_predecessor(unsigned ) const;        //returns pointer to element element POINTING ON element given number
-    UniBox<T>* get_nth(unsigned ) const;
-    void inject(unsigned, UniBox<T>* );
+    void append(T& );
+    UniBox* pick_predecessor(unsigned ) const;        //returns pointer to element element POINTING ON element given number
+    UniBox* get_nth(unsigned ) const;
+    void inject(unsigned, T& );
     void wipeout(unsigned );
     bool operator==(const ClosedChain&) const;
 
-    void operator+=(UniBox<T>* );
+    void operator+=(T& );
 
 
 };
@@ -54,20 +56,20 @@ public:
 class exceeded_scope {};
 
 template<typename T>
-UniBox<T>::UniBox(T& input):
+ClosedChain<T>::UniBox::UniBox(T& input):
     value(input){}
 
 template<typename T>
-T UniBox<T>::get_value() const{
+T ClosedChain<T>::UniBox::get_value() const{
     return value;
 }
 template<typename T>
-void UniBox<T>::set_anchor(UniBox* aim){
+void ClosedChain<T>::UniBox::set_anchor(UniBox* aim){
     anchor = aim;
 }
 template<typename T>
-UniBox<T>* UniBox<T>::get_anchor() const{
-    return anchor;  //returns adress to next element //no, not we return object // no, now we return pointer to
+typename ClosedChain<T>::UniBox* ClosedChain<T>::UniBox::get_anchor() const{
+    return anchor;  //returns adress to next element //no, now we return object // no, now we return pointer to
 }
 
 template<typename T>
@@ -77,13 +79,14 @@ bool ClosedChain<T>::is_blanc(){
     return false;
 }
 template<typename T>
-void ClosedChain<T>::append(UniBox<T>* newby){        //newby - pointer to new elem. All operations on pointers
+void ClosedChain<T>::append(T& _newby){        //newby - ref to new elem
+    UniBox* newby = new ClosedChain<T>::UniBox(_newby);
     if (alfa == nullptr){                     //so we begin list
         alfa = newby;
         newby->set_anchor(alfa);
     }
     else{
-        UniBox<T>* omega = get_nth(lenght-1);
+        UniBox* omega = get_nth(lenght-1);
         omega->set_anchor(newby);
         newby->set_anchor(alfa);
     }
@@ -91,7 +94,7 @@ void ClosedChain<T>::append(UniBox<T>* newby){        //newby - pointer to new e
 }
 
 template<typename T>
-UniBox<T>* ClosedChain<T>::pick_predecessor(unsigned point) const{
+typename ClosedChain<T>::UniBox* ClosedChain<T>::pick_predecessor(unsigned point) const{
 /*  gets pointer to object before object number "point"
     asked for the first returns the last element
     also asked for the place after last element (length) will return the last
@@ -99,8 +102,7 @@ UniBox<T>* ClosedChain<T>::pick_predecessor(unsigned point) const{
     if (point > lenght){
         throw exceeded_scope();
     }
-
-    UniBox<T>* floating_pointer = alfa;
+    UniBox* floating_pointer = alfa;
     unsigned i=0;
     while (i+1 < lenght){
         if ( i+1 == point )
@@ -111,17 +113,18 @@ UniBox<T>* ClosedChain<T>::pick_predecessor(unsigned point) const{
     return floating_pointer;
 }
 template<typename T>
-UniBox<T>* ClosedChain<T>::get_nth(unsigned n) const{
+typename ClosedChain<T>::UniBox* ClosedChain<T>::get_nth(unsigned n) const{
     if (n==0)
         return alfa;
     return pick_predecessor(n)->get_anchor();
 }
 template<typename T>
-void ClosedChain<T>::inject(unsigned point, UniBox<T>* newby){
-    UniBox<T>* pointing = pick_predecessor(point);
+void ClosedChain<T>::inject(unsigned point, T& _newby){
+    UniBox* pointing = pick_predecessor(point);
     if (pointing == nullptr){
-        throw "finding predecessor not succeded ";                             //how to step out program
+        throw "finding predecessor not succeded ";
     }
+    UniBox* newby = new ClosedChain<T>::UniBox(_newby);
     newby->set_anchor(pointing->get_anchor());
     pointing->set_anchor(newby);
     lenght += 1;
@@ -130,8 +133,8 @@ void ClosedChain<T>::inject(unsigned point, UniBox<T>* newby){
 }
 template<typename T>
 void ClosedChain<T>::wipeout(unsigned n){
-    UniBox<T>* pointing = pick_predecessor(n);
-    UniBox<T>* passing = pointing->get_anchor();
+    UniBox* pointing = pick_predecessor(n);
+    UniBox* passing = pointing->get_anchor();
     if (n == 0)
         alfa = get_nth(1);
     pointing->set_anchor(passing->get_anchor());
@@ -142,10 +145,10 @@ template<typename T>
 bool ClosedChain<T>::operator==(const ClosedChain<T>& other) const{
     if (lenght != other.get_length())
         return false;
-    if (lenght == 0)
+    if (lenght == 0)                                //teraz wiem ze dlugosci sa rowne
         return true;
-    UniBox<T> *shifting = alfa;
-    UniBox<T> *shifting_other = other.get_nth(0);
+    UniBox *shifting = alfa;
+    UniBox *shifting_other = other.get_nth(0);
     while (true){
         if (shifting == alfa)
             break;
@@ -157,46 +160,44 @@ bool ClosedChain<T>::operator==(const ClosedChain<T>& other) const{
     return true;
 }
 template<typename T>
-void ClosedChain<T>::operator+=(UniBox<T>* newby){
-    append(newby);
+void ClosedChain<T>::operator+=(T& _newby){
+    append(_newby);
 }
 template<typename T>
 ClosedChain<T>::~ClosedChain(){
     unsigned iter=0;
-    UniBox<T> *next, *shifting = alfa;
+    UniBox *next, *shifting = alfa;
     while (iter < lenght){
         next = shifting->get_anchor();
-        delete shifting;
+        delete shifting;                //iteruje po wszystkich boxach i delete. to jest ok bo UniBox zawsze jest tworzony z NEW
         shifting = next;
         ++iter;
     }
 }
 
 template<typename T>
+std::ostream& operator<<(std::ostream& os, const typename ClosedChain<T>::UniBox& content){
+     os << content.get_value();
+     return os;
+}
+
+template<typename T>
 std::ostream& operator<<(std::ostream& os, const ClosedChain<T>& chain){
     if (chain.get_nth(0) == nullptr)
         return os << "list is empty " << std::endl;
-    std::string content = "";
-    UniBox<T> *shifting, *first;
+    typename ClosedChain<T>::UniBox *shifting, *first;
     shifting = first = chain.get_nth(0);
-    os << *shifting;
+    os << shifting->get_value();                                //===============zle, uzyj operatora
     while (true){
         shifting = shifting->get_anchor();
         if (shifting == first)
             break;
-        os << ", " << *shifting;
+        os << ", " << shifting->get_value();
     }
     os << "; " << std::endl;
     return os;
 }
 
-template<typename T>
-std::ostream& operator<<(std::ostream& os, const UniBox<T>& content){
-     os << content.get_value();
-     return os;
-}
-
-//instantyzacja
 
 
 
