@@ -29,7 +29,7 @@ public:
 
 
 TestChain::TestChain(){
-    std::cout << "testing instance initialized" << std::endl;
+    std::cout << "integer testing instance initialized" << std::endl;
 }
 void TestChain::execute(){
     test_empty();
@@ -48,29 +48,34 @@ void TestChain::test_empty(){
     std::cout << "-> test_empty succeeded" << std::endl;
 }
 void TestChain::test_fill_length(){
-    *sample += new UniBox<int>(9);
-    *sample += new UniBox<int>(27);
-    *sample += new UniBox<int>(77);
-    *sample += new UniBox<int>(123);
+    int a=9,b=27,c=77,d=123;
+    *sample += new UniBox<int>(a);
+    *sample += new UniBox<int>(b);
+    *sample += new UniBox<int>(c);
+    *sample += new UniBox<int>(d);
     assert( sample->get_length() == 4 );
+    std::cout <<*sample;
     std::cout << "-> test_fill_length succeeded" << std::endl;
 }
 void TestChain::test_delete(){
     sample->wipeout(0);
+    std::cout <<*sample;
     assert( sample->get_nth(0)->get_value() == 27 );
     std::cout << "-> test_delete succeeded" << std::endl;
 }
 void TestChain::test_compare(){
     ClosedChain<int>* other = new ClosedChain<int>;
-    *other += new UniBox<int>(27);
-    *other += new UniBox<int>(77);
-    *other += new UniBox<int>(123);
+    int q=27, w=77, e=123;
+    *other += new UniBox<int>(q);
+    *other += new UniBox<int>(w);
+    *other += new UniBox<int>(e);
     assert( *sample == *other );
     delete other;
     std::cout << "-> test_compare succeeded" << std::endl;
 }
 void TestChain::test_inject(){
-    UniBox<int> *q = new UniBox<int>(49);
+    int t=49;
+    UniBox<int> *q = new UniBox<int>(t);
     sample->inject(0, q);
     assert( sample->get_nth(0)->get_value() == 49 );
     std::cout << "-> test_inject succeeded" << std::endl;

@@ -13,7 +13,7 @@ class UniBox{/*
     UniBox *anchor;         // stores pointer to next element
 
 public:
-    UniBox(T);
+    UniBox(T& );
     ~UniBox(){};//{ std::cout << "destruktor" << std::endl; };
     void set_anchor(UniBox*);
 
@@ -54,7 +54,7 @@ public:
 class exceeded_scope {};
 
 template<typename T>
-UniBox<T>::UniBox(T input):
+UniBox<T>::UniBox(T& input):
     value(input){}
 
 template<typename T>

@@ -6,11 +6,11 @@
 
 int main()
 {
-    TestChain test;
-    test.execute();
+    //TestChain test;
+    //test.execute();
 
-    //TestCustom test2;
-    //test2.execute();
+    TestCustom test2;
+    test2.execute();
 
 
 
