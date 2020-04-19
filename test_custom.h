@@ -30,7 +30,9 @@ std::ostream& operator<<(std::ostream& os, const Person& content){
 
 
 class TestCustom{
-    ClosedChain<Person>* sample = new ClosedChain<Person>;
+    //ClosedChain<Person>* sample = new ClosedChain<Person>;
+    std::unique_ptr<ClosedChain<Person>> sample = std::make_unique<ClosedChain<Person>>();
+
 
 public:
     TestCustom();
@@ -44,7 +46,7 @@ public:
     void test_inject();
     void test_printing();
 
-    void test_out_of_range();
+    void test_exceptions();
 
 };
 
@@ -56,7 +58,7 @@ TestCustom::TestCustom(){
     std::cout << "custom class testing instance initialized" << std::endl;
 }
 TestCustom::~TestCustom(){
-    delete sample;
+    //delete sample;
 }
 void TestCustom::execute(){
     test_empty();
@@ -65,7 +67,7 @@ void TestCustom::execute(){
     test_compare();
     test_inject();
     test_printing();
-    test_out_of_range();
+    test_exceptions();
 
     std::cout << "all tests succeeded" << std::endl << std::endl;
 }
@@ -80,7 +82,7 @@ void TestCustom::test_fill_length(){
     Person c("wojtek", "cc",6);
     *sample += *a;
     *sample += b;
-    *sample += c;
+    *sample += Person("wojtek", "cc", 6);
     assert( sample->get_length() == 3 );
     std::cout << "-> test_fill_length succeeded" << std::endl;
 }
@@ -108,15 +110,22 @@ void TestCustom::test_printing(){
     std::cout <<*sample;
     std::cout << "-> test_printing succeeded" << std::endl;
 }
-void TestCustom::test_out_of_range(){
+void TestCustom::test_exceptions(){
     try{
         sample->pick_predecessor(99);
     }
-    catch (exceeded_scope){
-        std::cout << "-> test_out_of_range succeeded" << std::endl;
-        return;
+    catch (ClosedChain<Person>::ExceededScope theException){
+        theException.print_message();
+        std::cout << "-> test_out_of_range succeeded 1/2" << std::endl;
     }
-    std::cout << "-> test_out_of_range failed" << std::endl;
+    try{
+        sample->pick_predecessor(-5);
+    }
+    //catch (ClosedChain<int>::Error theException){
+    catch (ClosedChain<Person>::IncorrectInput theException){
+        theException.print_message();
+        std::cout << "-> test_out_of_range succeeded 2/2" << std::endl;
+    }
 }
 
 

@@ -2,15 +2,18 @@
 #define TESTING_H_INCLUDED
 
 #include <cassert>
+#include <memory>
 #include "chain.h"
 
 
 class TestChain{
-    ClosedChain<int>* sample = new ClosedChain<int>;
-
+    //ClosedChain<int>* sample = new ClosedChain<int>;
+    std::unique_ptr<ClosedChain<int>> sample = std::make_unique<ClosedChain<int>>();
+        //unique smart ptr - istnieje tylko w tej klasie testującej. nie wolno kopiowac, przypisywać
+        //automatycznie sie usuwa wiec nie potrzeba definiowac destruktora
 public:
     TestChain();
-    ~TestChain();
+    //~TestChain();
 
     void execute();
     void test_fill_length();
@@ -20,7 +23,7 @@ public:
     void test_inject();
     void test_printing();
 
-    void test_out_of_range();
+    void test_exceptions();
 
 };
 
@@ -31,6 +34,10 @@ public:
 TestChain::TestChain(){
     std::cout << "testing instance initialized" << std::endl;
 }
+/*TestChain::~TestChain(){
+    //delete sample;
+}*/
+
 void TestChain::execute(){
     test_empty();
     test_fill_length();
@@ -38,7 +45,7 @@ void TestChain::execute(){
     test_compare();
     test_inject();
     test_printing();
-    test_out_of_range();
+    test_exceptions();
 
     std::cout << "all tests succeeded" << std::endl << std::endl;
 }
@@ -62,13 +69,14 @@ void TestChain::test_delete(){
     std::cout << "-> test_delete succeeded" << std::endl;
 }
 void TestChain::test_compare(){
-    ClosedChain<int>* other = new ClosedChain<int>;
-    int q=27, w=77, e=123;
+    //ClosedChain<int>* other = new ClosedChain<int>;
+    std::unique_ptr<ClosedChain<int>> other = std::make_unique<ClosedChain<int>>();     //tu dziala rowniez dla statycznie zdefiniowanego closedChain - dlaczego tak nie zrobić?
+    //ClosedChain<int> other;
+    int q=27, w=77;
     *other += q;
     *other += w;
-    *other += e;
+    *other += int(123);                                                     //inna metoda tworzenia - mozliwe bo dodajac kopiujemy
     assert( *sample == *other );
-    delete other;
     std::cout << "-> test_compare succeeded" << std::endl;
 }
 void TestChain::test_inject(){
@@ -82,29 +90,31 @@ void TestChain::test_printing(){
     std::cout << "-> test_printing succeeded" << std::endl;
 }
 
-TestChain::~TestChain(){
-    delete sample;
-}
-
-void TestChain::test_out_of_range(){
+void TestChain::test_exceptions(){
     try{
         sample->pick_predecessor(99);
     }
-    catch (exceeded_scope){
-        std::cout << "-> test_out_of_range succeeded" << std::endl;
-        return;
+    catch (ClosedChain<int>::ExceededScope theException){
+        theException.print_message();
+        std::cout << "-> test_out_of_range succeeded 1/2" << std::endl;
+                                                              //----------------------- Czy to dozwolone wyjœciue z funkcji void? - dotycvzyło return
     }
-    std::cout << "-> test_out_of_range failed" << std::endl;
+    try{
+        sample->pick_predecessor(-5);
+    }
+    //catch (ClosedChain<int>::Error theException){
+    catch (ClosedChain<int>::IncorrectInput theException){
+        theException.print_message();
+        std::cout << "-> test_out_of_range succeeded 2/2" << std::endl;
+    }
+    //std::cout << "-> test_out_of_range failed" << std::endl;                                      ciekawi mnie jak spiąć te wszystkie testy = mnożyć boole?
 }
 
 /*
 co musze zmienic
-test jakos tak zeby nie byl templatem. i testowal moj wlasny typ
- i zeby nie zapisywac do chaina statycznych obiektow
  poczytaj o throw i smart pointer
  sprawdz co robia metody dla pustej listy
- i assert jesno na test*/
-
+*/
 
 
 

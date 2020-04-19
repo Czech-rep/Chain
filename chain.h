@@ -2,6 +2,7 @@
 #define CHAIN_H_INCLUDED
 
 #include <iostream>
+#include <memory>
 
 
 template<typename T>
@@ -9,54 +10,81 @@ class ClosedChain{/*
     Chain Class managers our list. It contains of pointer to the first element.
     Number of elements is also stored.
 */
-//private:
 public:
     class UniBox{/*
         Class for storing content. Each element contains pointer to the element - value.
         Contains also pointer to another element on list.
         Does not store position number on list.
     */
-        T value;                // stores content - will be provided by reference
+        T value;                // stores content - will be provided
         UniBox *anchor;         // stores pointer to next element - next UniBox
     public:
-        UniBox(T& );
+        UniBox(const T );
         //~UniBox(){      delete value;    };//{ std::cout << "destruktor" << std::endl; };       // a co jesli value jest statyczne ?????
         void set_anchor(UniBox*);
 
         T get_value() const;
         UniBox* get_anchor() const;
     };
+
+
 private:
     unsigned lenght = 0;
-    ClosedChain<T>::UniBox *alfa=nullptr;//, *omega=nullptr;
-
+    ClosedChain<T>::UniBox *alfa=nullptr;
+    //std::shared_ptr<UniBox> alfa = std::make_shared<UniBox>();
 
 
 public:
     ClosedChain(){};
     ~ClosedChain();
+
     unsigned get_length() const { return lenght; };
     bool is_blanc();
 
-    void append(T& );
-    UniBox* pick_predecessor(unsigned ) const;        //returns pointer to element element POINTING ON element given number
-    UniBox* get_nth(unsigned ) const;
-    void inject(unsigned, T& );
-    void wipeout(unsigned );
+    void append(T );
+    void operator+=(T );
+    UniBox* pick_predecessor(int ) const;
+    UniBox* get_nth(int ) const;
+    void inject(int, T );
+    void wipeout(int );
+
     bool operator==(const ClosedChain&) const;
 
-    void operator+=(T& );
 
+    class Error{
+    public:
+        //Error(){};
+        void print_message(){ std::cout << "Chain error message: "; }
+    };
+
+    class IncorrectInput: public Error{
+        int n;
+    public:
+        IncorrectInput(int _n): n(_n){ Error::print_message(); };
+        void print_message(){
+            std::cout << "not allowed negative index: " << n << std::endl;
+        }
+    };
+
+    class ExceededScope: public Error{
+        unsigned len, n;
+    public:
+        ExceededScope(){};
+        ExceededScope(unsigned _n, unsigned _len): n(_n), len(_len){};
+        void print_message(){
+            Error::print_message();
+            std::cout << n << " not in range of list length " << len << " " << std::endl;
+        }
+    };
 
 };
 
 // =========================== IMPLEMENTATION =========================== \\
 
 
-class exceeded_scope {};
 
 template<typename T>
-ClosedChain<T>::UniBox::UniBox(T& input):
+ClosedChain<T>::UniBox::UniBox(const T input):
     value(input){}
 
 template<typename T>
@@ -69,7 +97,7 @@ void ClosedChain<T>::UniBox::set_anchor(UniBox* aim){
 }
 template<typename T>
 typename ClosedChain<T>::UniBox* ClosedChain<T>::UniBox::get_anchor() const{
-    return anchor;  //returns adress to next element //no, now we return object // no, now we return pointer to
+    return anchor;
 }
 
 template<typename T>
@@ -79,14 +107,14 @@ bool ClosedChain<T>::is_blanc(){
     return false;
 }
 template<typename T>
-void ClosedChain<T>::append(T& _newby){        //newby - ref to new elem
-    UniBox* newby = new ClosedChain<T>::UniBox(_newby);
-    if (alfa == nullptr){                     //so we begin list
+void ClosedChain<T>::append(T _newby){
+    UniBox* newby = new ClosedChain<T>::UniBox(_newby);                 //pytanie - co to tak na prawde obiekt newby - ile żyje?
+    if (alfa == nullptr){                                   //so we begin list
         alfa = newby;
         newby->set_anchor(alfa);
     }
     else{
-        UniBox* omega = get_nth(lenght-1);
+        UniBox* omega = pick_predecessor(0);
         omega->set_anchor(newby);
         newby->set_anchor(alfa);
     }
@@ -94,14 +122,16 @@ void ClosedChain<T>::append(T& _newby){        //newby - ref to new elem
 }
 
 template<typename T>
-typename ClosedChain<T>::UniBox* ClosedChain<T>::pick_predecessor(unsigned point) const{
+typename ClosedChain<T>::UniBox* ClosedChain<T>::pick_predecessor(int point) const{
 /*  gets pointer to object before object number "point"
     asked for the first returns the last element
     also asked for the place after last element (length) will return the last
 */
-    if (point > lenght){
-        throw exceeded_scope();
-    }
+    if (point < 0)
+        throw IncorrectInput(point);
+    if (point > lenght)
+        throw ExceededScope(point, lenght);
+
     UniBox* floating_pointer = alfa;
     unsigned i=0;
     while (i+1 < lenght){
@@ -113,13 +143,15 @@ typename ClosedChain<T>::UniBox* ClosedChain<T>::pick_predecessor(unsigned point
     return floating_pointer;
 }
 template<typename T>
-typename ClosedChain<T>::UniBox* ClosedChain<T>::get_nth(unsigned n) const{
+typename ClosedChain<T>::UniBox* ClosedChain<T>::get_nth(int n) const{
+    if (n < 0)
+        throw IncorrectInput(n);
     if (n==0)
         return alfa;
     return pick_predecessor(n)->get_anchor();
 }
 template<typename T>
-void ClosedChain<T>::inject(unsigned point, T& _newby){
+void ClosedChain<T>::inject(int point, T _newby){
     UniBox* pointing = pick_predecessor(point);
     if (pointing == nullptr){
         throw "finding predecessor not succeded ";
@@ -132,7 +164,7 @@ void ClosedChain<T>::inject(unsigned point, T& _newby){
         alfa = newby;
 }
 template<typename T>
-void ClosedChain<T>::wipeout(unsigned n){
+void ClosedChain<T>::wipeout(int n){
     UniBox* pointing = pick_predecessor(n);
     UniBox* passing = pointing->get_anchor();
     if (n == 0)
@@ -150,7 +182,7 @@ bool ClosedChain<T>::operator==(const ClosedChain<T>& other) const{
     UniBox *shifting = alfa;
     UniBox *shifting_other = other.get_nth(0);
     while (true){
-        if (shifting == alfa)
+        if (shifting == alfa)                       //a wiec przeszedl caly lancuch
             break;
         if (shifting->get_value() != shifting_other->get_value())
             return false;
@@ -160,7 +192,7 @@ bool ClosedChain<T>::operator==(const ClosedChain<T>& other) const{
     return true;
 }
 template<typename T>
-void ClosedChain<T>::operator+=(T& _newby){
+void ClosedChain<T>::operator+=(T _newby){
     append(_newby);
 }
 template<typename T>
@@ -177,7 +209,8 @@ ClosedChain<T>::~ClosedChain(){
 
 template<typename T>
 std::ostream& operator<<(std::ostream& os, const typename ClosedChain<T>::UniBox& content){
-     os << content.get_value();
+    std::cout<<"check "<<std::endl;
+     os << content->get_value();
      return os;
 }
 
@@ -187,7 +220,8 @@ std::ostream& operator<<(std::ostream& os, const ClosedChain<T>& chain){
         return os << "list is empty " << std::endl;
     typename ClosedChain<T>::UniBox *shifting, *first;
     shifting = first = chain.get_nth(0);
-    os << shifting->get_value();                                //===============zle, uzyj operatora
+    //os << shifting->get_value();                                //===============zle, uzyj operatora
+    os << shifting->get_value();
     while (true){
         shifting = shifting->get_anchor();
         if (shifting == first)

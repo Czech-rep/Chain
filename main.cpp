@@ -12,34 +12,20 @@ int main()
     TestCustom test2;
     test2.execute();
 
+    /*ClosedChain<int>* sample = new ClosedChain<int>;
+    int a=9,b=27,c=77,d=123;
+    *sample += a;
+    *sample += b;
+    *sample += c;
+    *sample += d;
 
+    //std::cout<<(*sample->get_nth(2))<<std::endl;
+    auto kk = sample->get_nth(96);
 
-    /*UniBox<int>* a = new UniBox<int>(1);
-    UniBox<int>* b = new UniBox<int>(15);
-    UniBox<int>* c = new UniBox<int>(88);
-    UniBox<int>* d = new UniBox<int>(123);
-
-    ClosedChain<int> loop;
-    loop.append(a);
-    //std::cout<<loop<<std::endl;
-    loop.append(b);
-    //std::cout<<loop<<std::endl;
-    loop.append(c);
-    //std::cout<<loop<<std::endl;
-    loop.append(d);
-    //std::cout<<loop<<std::endl;
-
-
-    std::cout<<" p:"<<*loop.pick_predecessor(10)<<std::endl;
-
-
-
-
-    std::cout<<loop<<std::endl;
-    std::cout<<" to bvyla lissta " <<std::endl;
+    std::cout<<*sample<<std::endl;
+    std::cout<<" to bvyla lista " <<std::endl;
 */
-
-    std::cout << "===program executed " << std::endl;
+    std::cout << "===   program executed " << std::endl;
     return 0;
 }
 
