@@ -2,7 +2,6 @@
 
 #include "chain.h"
 #include "testing.h"
-#include "test_custom.h"
 
 int main()
 {

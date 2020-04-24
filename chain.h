@@ -54,9 +54,8 @@ public:
     class Error{
     public:
         //Error(){};
-        void print_message(){ std::cout << "Chain error message: "; }
+        void print_message(){ std::cout << "Chain error message: "; }   //problem jest z wyswietlaniem tego bez przyczyny
     };
-
     class IncorrectInput: public Error{
         int n;
     public:
@@ -65,7 +64,6 @@ public:
             std::cout << "not allowed negative index: " << n << std::endl;
         }
     };
-
     class ExceededScope: public Error{
         unsigned len, n;
     public:
