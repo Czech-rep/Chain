@@ -10,7 +10,7 @@ class ClosedChain{/*
     Chain Class managers our list. It contains of pointer to the first element.
     Number of elements is also stored.
 */
-public:
+private:
     class UniBox{/*
         Class for storing content. Each element contains pointer to the element - value.
         Contains also pointer to another element on list.
@@ -20,16 +20,20 @@ public:
         UniBox *anchor;         // stores pointer to next element - next UniBox
     public:
         UniBox(const T );
-        //~UniBox(){      delete value;    };//{ std::cout << "destruktor" << std::endl; };       // a co jesli value jest statyczne ?????
         void set_anchor(UniBox*);
 
         T get_value() const;
         UniBox* get_anchor() const;
+        friend std::ostream& operator<<(std::ostream& os, const UniBox& content){       //works only as inline function
+             os << content.get_value();
+             return os;
+        }
+
     };
 
 
 private:
-    unsigned lenght = 0;
+    int lenght = 0;
     ClosedChain<T>::UniBox *alfa=nullptr;
     //std::shared_ptr<UniBox> alfa = std::make_shared<UniBox>();
 
@@ -49,35 +53,34 @@ public:
     void wipeout(int );
 
     bool operator==(const ClosedChain&) const;
-
-
-    class Error{
-    public:
-        //Error(){};
-        void print_message(){ std::cout << "Chain error message: "; }   //problem jest z wyswietlaniem tego bez przyczyny
-    };
-    class IncorrectInput: public Error{
-        int n;
-    public:
-        IncorrectInput(int _n): n(_n){ Error::print_message(); };
-        void print_message(){
-            std::cout << "not allowed negative index: " << n << std::endl;
-        }
-    };
-    class ExceededScope: public Error{
-        unsigned len, n;
-    public:
-        ExceededScope(){};
-        ExceededScope(unsigned _n, unsigned _len): n(_n), len(_len){};
-        void print_message(){
-            Error::print_message();
-            std::cout << n << " not in range of list length " << len << " " << std::endl;
-        }
-    };
-
 };
 
-// =========================== IMPLEMENTATION =========================== \\
+class Error{
+public:
+    void print_message(){ std::cout << "Chain error message: "; }   //problem jest z wyswietlaniem tego bez przyczyny
+};
+class IncorrectInput: public Error{
+    int n;
+public:
+    IncorrectInput(int _n): n(_n){};
+    void print_message(){
+        Error::print_message();
+        std::cout << "not allowed negative index: " << n << std::endl;
+    }
+};
+class ExceededScope: public Error{
+    unsigned len, n;
+public:
+    ExceededScope(){};
+    ExceededScope(unsigned _n, unsigned _len): n(_n), len(_len){};
+    void print_message(){
+        Error::print_message();
+        std::cout << n << " not in range of list length " << len << " " << std::endl;
+    }
+};
+
+
+// =========================== IMPLEMENTATION ===========================
 
 
 
@@ -107,7 +110,7 @@ bool ClosedChain<T>::is_blanc(){
 template<typename T>
 void ClosedChain<T>::append(T _newby){
     UniBox* newby = new ClosedChain<T>::UniBox(_newby);                 //pytanie - co to tak na prawde obiekt newby - ile żyje?
-    if (alfa == nullptr){                                   //so we begin list
+    if (alfa == nullptr){
         alfa = newby;
         newby->set_anchor(alfa);
     }
@@ -127,7 +130,7 @@ typename ClosedChain<T>::UniBox* ClosedChain<T>::pick_predecessor(int point) con
 */
     if (point < 0)
         throw IncorrectInput(point);
-    if (point > lenght)
+    if (point >= lenght)
         throw ExceededScope(point, lenght);
 
     UniBox* floating_pointer = alfa;
@@ -164,12 +167,18 @@ void ClosedChain<T>::inject(int point, T _newby){
 template<typename T>
 void ClosedChain<T>::wipeout(int n){
     UniBox* pointing = pick_predecessor(n);
-    UniBox* passing = pointing->get_anchor();
-    if (n == 0)
-        alfa = get_nth(1);
-    pointing->set_anchor(passing->get_anchor());
+    UniBox* standing = pointing->get_anchor();
+    pointing->set_anchor(standing->get_anchor());
+    delete standing;
     --lenght;
-    delete passing;
+    if (n == 0){
+        if (lenght == 0){
+            alfa = nullptr;
+        }
+        else{
+            alfa = pointing->get_anchor();
+        }
+    }
 }
 template<typename T>
 bool ClosedChain<T>::operator==(const ClosedChain<T>& other) const{
@@ -199,37 +208,25 @@ ClosedChain<T>::~ClosedChain(){
     UniBox *next, *shifting = alfa;
     while (iter < lenght){
         next = shifting->get_anchor();
-        delete shifting;                //iteruje po wszystkich boxach i delete. to jest ok bo UniBox zawsze jest tworzony z NEW
+        delete shifting;
         shifting = next;
         ++iter;
     }
 }
 
 template<typename T>
-std::ostream& operator<<(std::ostream& os, const typename ClosedChain<T>::UniBox& content){
-    std::cout<<"check "<<std::endl;
-     os << content->get_value();
-     return os;
-}
-
-template<typename T>
 std::ostream& operator<<(std::ostream& os, const ClosedChain<T>& chain){
     if (chain.get_nth(0) == nullptr)
         return os << "list is empty " << std::endl;
-    typename ClosedChain<T>::UniBox *shifting, *first;
-    shifting = first = chain.get_nth(0);
-    //os << shifting->get_value();                                //===============zle, uzyj operatora
-    os << shifting->get_value();
-    while (true){
-        shifting = shifting->get_anchor();
-        if (shifting == first)
-            break;
-        os << ", " << shifting->get_value();
+    unsigned n = 1, len = chain.get_length();
+    os << *chain.get_nth(0);
+    while(n < len){
+        os << ", " << *chain.get_nth(n);
+        ++n;
     }
     os << "; " << std::endl;
     return os;
 }
-
 
 
 

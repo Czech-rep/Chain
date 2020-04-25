@@ -19,9 +19,11 @@ public:
 };
 
 
-class TestCustom{       //tests ClosedChain agaist custom class: Person
-
-class Person{           //implementation of private nested class Person
+class TestCustom{
+    //tests ClosedChain against custom class: Person
+public:
+class Person{
+    //implementation of private nested class Person
     std::string first_name, last_name;
     int number;
 public:
@@ -31,10 +33,6 @@ public:
     bool operator==(const Person &other) const;
     bool operator!=(const Person &other) const;
 };
-/*std::ostream& operator<<(std::ostream& os, const Person& content){
-     os << content.get_name();
-     return os;
-}*/ //popraw drukowanie
 
 private:
     std::unique_ptr<ClosedChain<Person>> sample = std::make_unique<ClosedChain<Person>>();
@@ -48,7 +46,6 @@ public:
     void test_compare();
     void test_inject();
     void test_exceptions();
-
 };
 
 

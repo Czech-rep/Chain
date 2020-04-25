@@ -20,6 +20,7 @@ void TestChain::execute(){
     test_inject();
     std::cout << "-> executing test_exceptions" << std::endl;
     test_exceptions();
+    //std::cout << *sample << std::endl;
     std::cout << "all tests succeeded" << std::endl << std::endl;
 }
 void TestChain::test_empty(){
@@ -55,13 +56,13 @@ void TestChain::test_exceptions(){
     try{
         sample->pick_predecessor(99);
     }
-    catch (ClosedChain<int>::ExceededScope theException){
+    catch (ExceededScope ){
         i++;
     }
     try{
         sample->pick_predecessor(-5);
     }
-    catch (ClosedChain<int>::IncorrectInput theException){
+    catch (IncorrectInput ){
         i++;
     }
     assert( i == 2 );
@@ -78,6 +79,10 @@ bool TestCustom::Person::operator!=(const Person &other) const{
     if( first_name!=other.first_name || last_name!=other.last_name || number!=other.number)
         return true;
     return false;
+}
+std::ostream& operator<<(std::ostream& os, const TestCustom::Person& content){
+     os << content.get_name();
+     return os;
 }
 
 TestCustom::TestCustom(){
@@ -96,6 +101,7 @@ void TestCustom::execute(){
     test_inject();
     std::cout << "-> executing test_exceptions" << std::endl;
     test_exceptions();
+    //std::cout << *sample << std::endl;
     std::cout << "all tests succeeded" << std::endl << std::endl;
 }
 void TestCustom::test_empty(){
@@ -132,13 +138,13 @@ void TestCustom::test_exceptions(){
     try{
         sample->pick_predecessor(99);
     }
-    catch (ClosedChain<Person>::ExceededScope theException){
+    catch (ExceededScope){
         i++;
     }
     try{
         sample->pick_predecessor(-5);
     }
-    catch (ClosedChain<Person>::IncorrectInput theException){
+    catch (IncorrectInput){
         i++;
     }
     assert( i == 2 );
