@@ -10,10 +10,12 @@ int main()
 
     TestCustom test2;
     test2.execute();
-
-   /* ClosedChain<int>* sample = new ClosedChain<int>;
+/*
+    ClosedChain<int>* sample = new ClosedChain<int>;
     int a=9,b=27,c=77,d=123;
+    std::cout<<*sample<<std::endl;
     *sample += a;
+    std::cout<<*sample<<std::endl;
     *sample += b;
     *sample += c;
     *sample += d;

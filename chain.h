@@ -3,7 +3,8 @@
 
 #include <iostream>
 #include <memory>
-
+template<typename T> class ClosedChain;
+template<typename T> std::ostream& operator<<(std::ostream& os, const ClosedChain<T>& chain);
 
 template<typename T>
 class ClosedChain{/*
@@ -28,15 +29,11 @@ private:
              os << content.get_value();
              return os;
         }
-
     };
-
 
 private:
     int lenght = 0;
     ClosedChain<T>::UniBox *alfa=nullptr;
-    //std::shared_ptr<UniBox> alfa = std::make_shared<UniBox>();
-
 
 public:
     ClosedChain(){};
@@ -51,8 +48,9 @@ public:
     UniBox* get_nth(int ) const;
     void inject(int, T );
     void wipeout(int );
-
     bool operator==(const ClosedChain&) const;
+
+    friend std::ostream& operator<< <>(std::ostream& os, const ClosedChain<T>& chain);
 };
 
 class Error{
@@ -215,19 +213,21 @@ ClosedChain<T>::~ClosedChain(){
 }
 
 template<typename T>
-std::ostream& operator<<(std::ostream& os, const ClosedChain<T>& chain){
+std::ostream& operator<< (std::ostream& os, const ClosedChain<T>& chain){
     if (chain.get_nth(0) == nullptr)
         return os << "list is empty " << std::endl;
-    unsigned n = 1, len = chain.get_length();
-    os << *chain.get_nth(0);
-    while(n < len){
-        os << ", " << *chain.get_nth(n);
-        ++n;
+    unsigned n = 1;
+    typename ClosedChain<T>::UniBox *shifting = chain.get_nth(0), *head = chain.get_nth(0);
+    os << *shifting;
+    while( true ){
+        shifting = shifting->get_anchor();
+        if (shifting == head)
+            break;
+        os << ", " << *shifting;
     }
     os << "; " << std::endl;
     return os;
 }
-
 
 
 #endif // CHAIN_H_INCLUDED
