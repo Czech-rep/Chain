@@ -1,98 +1,154 @@
+#include <cassert>
+#include <memory>
 #include "testing.h"
 #include "chain.h"
 
-#include <iostream>
-#include <cassert>
-
 
 TestChain::TestChain(){
-    init();
-    std::cout << "testing instance initialized" << std::endl;
+    std::cout << "integer testing instance initialized" << std::endl;
 }
-void TestChain::init(){
-    sample = new ClosedChain;
-}
-void TestChain::execute_all(){
+void TestChain::execute(){
+    std::cout << "-> executing test_empty" << std::endl;
     test_empty();
-    test_fill_length_match();
+    std::cout << "-> executing test_fill_length" << std::endl;
+    test_fill_length();
+    std::cout << "-> executing test_delete" << std::endl;
     test_delete();
+    std::cout << "-> executing test_compare" << std::endl;
     test_compare();
+    std::cout << "-> executing test_inject" << std::endl;
     test_inject();
-    test_printing();
-
-    std::cout << "all tests succeeded" << std::endl;
+    std::cout << "-> executing test_exceptions" << std::endl;
+    test_exceptions();
+    //std::cout << *sample << std::endl;
+    std::cout << "all tests succeeded" << std::endl << std::endl;
 }
-
-
 void TestChain::test_empty(){
     assert( sample->is_blanc() == 1 );
-    *sample += new UniBox(2);
-    assert( sample->is_blanc() == 0 );
-    std::cout << "-> test_empty succeeded" << std::endl;
 }
-void TestChain::test_fill_length_match(){
-    *sample += new UniBox(9);
-    *sample += new UniBox(27);
-    *sample += new UniBox(77);
-    *sample += new UniBox(123);
-
-    assert( sample->get_length() == 5 );
-    assert( sample->get_nth(0)->get_value() == 2 );
-    assert( sample->get_nth(4)->get_value() == 123 );
-    std::cout << "-> test_fill_length_match succeeded" << std::endl;
+void TestChain::test_fill_length(){
+    int a=9,b=27,c=77,d=123;
+    *sample += a;
+    *sample += b;
+    *sample += c;
+    *sample += d;
+    assert( sample->get_length() == 4 );
 }
 void TestChain::test_delete(){
-    sample->wipeout(4);
     sample->wipeout(0);
-    assert( sample->get_length() == 3 );
-    assert( sample->get_nth(0)->get_value() == 9 );
-    assert( sample->get_nth(2)->get_value() == 77 );
-    std::cout << "-> test_delete succeeded" << std::endl;
+    assert( sample->get_nth(0)->get_value() == 27 );
 }
 void TestChain::test_compare(){
-    ClosedChain other;
-    UniBox q(9), w(27), e(77);
-    other += &q;
-    other += &w;
-    other += &e;
-    assert( *sample == other );
-    other.wipeout(0);
-    assert( !(*sample == other) );
-    other.~ClosedChain();
-    std::cout << "-> test_compare succeeded" << std::endl;
+    std::unique_ptr<ClosedChain<int>> other = std::make_unique<ClosedChain<int>>();
+    int q=27, w=77;
+    *other += q;
+    *other += w;
+    *other += int(123);                                                     //inna metoda tworzenia - mozliwe bo dodajac kopiujemy
+    assert( *sample == *other );
 }
 void TestChain::test_inject(){
-    assert( sample->get_nth(1)->get_value() == 27 );
-    UniBox *q = new UniBox(49);
-    //UniBox q(49                                   dziwnie sie dzieje jak stworzymy element w miejscu - po zakonczeniu funkcji nie znika
-    sample->inject(1, q);
-    assert( sample->get_nth(1)->get_value() == 49 );
-    assert( sample->get_nth(2)->get_value() == 27 );
-        assert( sample->get_nth(0)->get_value() == 9 );
-        UniBox *w = new UniBox(50);
-        sample->inject(0, w);
-        assert( sample->get_nth(0)->get_value() == 50 );
-    UniBox *e = new UniBox(500);
-    sample->inject(5, e);
-    assert( sample->get_nth(5)->get_value() == 500 );
-    //std::cout <<*sample;
-    //std::cout << sample->get_length() << std::endl;
-    //std::cout << "last elem fun: " << sample->get_nth(5)->get_value() << std::endl;
-    std::cout << "-> test_inject succeeded" << std::endl;
+    int t=49;
+    sample->inject(0, t);
+    assert( sample->get_nth(0)->get_value() == 49 );
 }
-void TestChain::test_printing(){
-    std::cout <<*sample;
-    std::cout << "-> test_printing succeeded" << std::endl;
-    //std::cout << "last elem: " << (sample->pick_predecessor(sample->get_length()))->get_value() << std::endl;
-    //std::cout << "last elem: " << sample->get_nth(4)->get_value() << std::endl;
-}
-//duuuuuze pytanie, co sie dzieje dlaczego teraz dziala mimo ze obiekty e(500) i w(50) powinny zosta ununiete?
-TestChain::~TestChain(){
-    sample->~ClosedChain();
+void TestChain::test_exceptions(){
+    int i=0;
+    try{
+        sample->pick_predecessor(99);
+    }
+    catch (ExceededScope ){
+        i++;
+    }
+    try{
+        sample->pick_predecessor(-5);
+    }
+    catch (IncorrectInput ){
+        i++;
+    }
+    assert( i == 2 );
 }
 
+//========================implementation of TestCustom========================//
 
+bool TestCustom::Person::operator==(const Person &other) const{
+    if( first_name==other.first_name && last_name==other.last_name && number==other.number)
+        return true;
+    return false;
+}
+bool TestCustom::Person::operator!=(const Person &other) const{
+    if( first_name!=other.first_name || last_name!=other.last_name || number!=other.number)
+        return true;
+    return false;
+}
+std::ostream& operator<<(std::ostream& os, const TestCustom::Person& content){
+     os << content.get_name();
+     return os;
+}
 
+TestCustom::TestCustom(){
+    std::cout << "custom class testing instance initialized" << std::endl;
+}
+void TestCustom::execute(){
+    std::cout << "-> executing test_empty" << std::endl;
+    test_empty();
+    std::cout << "-> executing test_fill_length" << std::endl;
+    test_fill_length();
+    std::cout << "-> executing test_delete" << std::endl;
+    test_delete();
+    std::cout << "-> executing test_compare" << std::endl;
+    test_compare();
+    std::cout << "-> executing test_inject" << std::endl;
+    test_inject();
+    std::cout << "-> executing test_exceptions" << std::endl;
+    test_exceptions();
+    //std::cout << *sample << std::endl;
+    std::cout << "all tests succeeded" << std::endl << std::endl;
+}
+void TestCustom::test_empty(){
+    assert( sample->is_blanc() == 1 );
+}
+void TestCustom::test_fill_length(){
+    Person* a = new Person("Adam", "Czech", 67676237);
+    Person b("franek","k",5);
+    Person c("wojtek", "cc",6);
+    *sample += *a;
+    *sample += b;
+    *sample += Person("wojtek", "cc", 6);
+    assert( sample->get_length() == 3 );
+}
+void TestCustom::test_delete(){
+    sample->wipeout(0);
+    assert( sample->get_nth(0)->get_value().get_name() == "franek" );
+}
+void TestCustom::test_compare(){
+    ClosedChain<Person> other;
+    Person q("franek","k",5);
+    Person w("wojtek", "cc",6);
+    other += q;
+    other += w;
+    assert( *sample == other );
+}
+void TestCustom::test_inject(){
+    Person pp("karol","ww",21);
+    sample->inject(0, pp);
+    assert( sample->get_nth(0)->get_value() == Person("karol","ww",21) );
+}
+void TestCustom::test_exceptions(){
+    int i=0;
+    try{
+        sample->pick_predecessor(99);
+    }
+    catch (ExceededScope){
+        i++;
+    }
+    try{
+        sample->pick_predecessor(-5);
+    }
+    catch (IncorrectInput){
+        i++;
+    }
+    assert( i == 2 );
+}
 
 
 
