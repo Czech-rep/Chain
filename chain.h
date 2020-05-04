@@ -21,6 +21,7 @@ private:
         UniBox *anchor;         // stores pointer to next element - next UniBox
     public:
         UniBox(const T );
+        UniBox(UniBox&){std::cout << "copied" << std::endl; }
         void set_anchor(UniBox*);
 
         T get_value() const;
@@ -34,7 +35,9 @@ private:
 private:
     int lenght = 0;
     ClosedChain<T>::UniBox *alfa=nullptr;
+
     UniBox* pick_predecessor(int ) const;
+    UniBox* get_nth(int ) const;
 
 public:
     ClosedChain(){};
@@ -44,8 +47,8 @@ public:
     bool is_blanc();
 
     void append(T );
-    void operator+=(T );
-    UniBox* get_nth(int ) const;
+    void operator +=(T );
+    T print_content(int ) const;
     void inject(int, T );
     void wipeout(int );
     bool operator==(const ClosedChain&) const;
@@ -211,6 +214,10 @@ ClosedChain<T>::~ClosedChain(){
         ++iter;
     }
 }
+template<typename T>
+T ClosedChain<T>::print_content(int n) const{
+    return get_nth(n)->get_value();
+}
 
 template<typename T>
 std::ostream& operator<< (std::ostream& os, const ClosedChain<T>& chain){
@@ -218,7 +225,7 @@ std::ostream& operator<< (std::ostream& os, const ClosedChain<T>& chain){
         return os << "list is empty " << std::endl;
     unsigned n = 1;
     typename ClosedChain<T>::UniBox *shifting = chain.get_nth(0), *head = chain.get_nth(0);
-    os << *shifting;
+    os << *shifting;                        //tutaj korzystam z przeladowanego operatora wypisywania dla UniBox
     while( true ){
         shifting = shifting->get_anchor();
         if (shifting == head)

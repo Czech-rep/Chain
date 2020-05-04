@@ -36,7 +36,7 @@ void TestChain::test_fill_length(){
 }
 void TestChain::test_delete(){
     sample->wipeout(0);
-    assert( sample->get_nth(0)->get_value() == 27 );
+    assert( sample->print_content(0) == 27 );
 }
 void TestChain::test_compare(){
     std::unique_ptr<ClosedChain<int>> other = std::make_unique<ClosedChain<int>>();
@@ -49,18 +49,18 @@ void TestChain::test_compare(){
 void TestChain::test_inject(){
     int t=49;
     sample->inject(0, t);
-    assert( sample->get_nth(0)->get_value() == 49 );
+    assert( sample->print_content(0) == 49 );
 }
 void TestChain::test_exceptions(){
     int i=0;
     try{
-        sample->get_nth(99);
+        sample->print_content(99);
     }
     catch (ExceededScope ){
         i++;
     }
     try{
-        sample->get_nth(-5);
+        sample->print_content(-5);
     }
     catch (IncorrectInput ){
         i++;
@@ -118,7 +118,7 @@ void TestCustom::test_fill_length(){
 }
 void TestCustom::test_delete(){
     sample->wipeout(0);
-    assert( sample->get_nth(0)->get_value().get_name() == "franek" );
+    assert( sample->print_content(0).get_name() == "franek" );
 }
 void TestCustom::test_compare(){
     ClosedChain<Person> other;
@@ -131,18 +131,18 @@ void TestCustom::test_compare(){
 void TestCustom::test_inject(){
     Person pp("karol","ww",21);
     sample->inject(0, pp);
-    assert( sample->get_nth(0)->get_value() == Person("karol","ww",21) );
+    assert( sample->print_content(0) == Person("karol","ww",21) );
 }
 void TestCustom::test_exceptions(){
     int i=0;
     try{
-        sample->get_nth(99);
+        sample->print_content(99);
     }
     catch (ExceededScope){
         i++;
     }
     try{
-        sample->get_nth(-5);
+        sample->print_content(-5);
     }
     catch (IncorrectInput){
         i++;
