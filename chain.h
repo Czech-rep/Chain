@@ -34,6 +34,7 @@ private:
 private:
     int lenght = 0;
     ClosedChain<T>::UniBox *alfa=nullptr;
+    UniBox* pick_predecessor(int ) const;
 
 public:
     ClosedChain(){};
@@ -44,7 +45,6 @@ public:
 
     void append(T );
     void operator+=(T );
-    UniBox* pick_predecessor(int ) const;
     UniBox* get_nth(int ) const;
     void inject(int, T );
     void wipeout(int );

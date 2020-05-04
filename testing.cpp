@@ -54,13 +54,13 @@ void TestChain::test_inject(){
 void TestChain::test_exceptions(){
     int i=0;
     try{
-        sample->pick_predecessor(99);
+        sample->get_nth(99);
     }
     catch (ExceededScope ){
         i++;
     }
     try{
-        sample->pick_predecessor(-5);
+        sample->get_nth(-5);
     }
     catch (IncorrectInput ){
         i++;
@@ -136,13 +136,13 @@ void TestCustom::test_inject(){
 void TestCustom::test_exceptions(){
     int i=0;
     try{
-        sample->pick_predecessor(99);
+        sample->get_nth(99);
     }
     catch (ExceededScope){
         i++;
     }
     try{
-        sample->pick_predecessor(-5);
+        sample->get_nth(-5);
     }
     catch (IncorrectInput){
         i++;
