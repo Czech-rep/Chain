@@ -49,12 +49,5 @@ public:
 };
 
 
-/*
-co musze zmienic
- sprawdz co robia metody dla pustej listy
-*/
-
-
-
 
 #endif // TESTING_H_INCLUDED
